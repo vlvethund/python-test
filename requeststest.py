@@ -7,13 +7,17 @@ from sqlalchemy.orm import sessionmaker
 from store.stockpricehistoricaldata import stock_price_historical_data
 from dotenv import load_dotenv
 import os
+from pytz import timezone
+
 
 load_dotenv()
 dburl = os.environ.get('dburl')
+tz = timezone('EST')
 
 symbol = 'AAPL'
-start = '2024-03-01'
+start = '2000-01-01'
 end = 'today'
+
 
 stock_price_historical_data_table = Table(
     'stock_price_historical_data', MetaData(),
@@ -29,10 +33,15 @@ stock_price_historical_data_table = Table(
 
 insertArr = []
 
-startDateTime = datetime.strptime(start, '%Y-%m-%d')
-endDateTime = datetime.today()
+startSplit = start.split('-')
+
+startDateTime = datetime(int(startSplit[0]), int(startSplit[1]), int(startSplit[2]), 0, 0, 0, tzinfo=tz)
+endDateTime = datetime.today().astimezone(tz)
+
+
 if end != 'today':
-    endDateTime = datetime.strptime(end, '%Y-%m-%d')
+    endSplit = end.split('-')
+    endDateTime = datetime(int(endSplit[0]), int(endSplit[1]), int(endSplit[2]), 0, 0, 0, tzinfo=tz)
 
 startUnix = int(time.mktime(startDateTime.timetuple()))
 endUnix = int(time.mktime(endDateTime.timetuple()))
@@ -46,11 +55,12 @@ if response.status_code == 200:
     body = json.loads(content)
 
     for idx, unix_time in enumerate(body['chart']['result'][0]['timestamp']):
-        date = datetime.utcfromtimestamp(unix_time)
+        date = datetime.utcfromtimestamp(unix_time).astimezone(tz)
         open = body['chart']['result'][0]['indicators']['quote'][0]['open'][idx]
         high = body['chart']['result'][0]['indicators']['quote'][0]['high'][idx]
         low = body['chart']['result'][0]['indicators']['quote'][0]['low'][idx]
         close = body['chart']['result'][0]['indicators']['quote'][0]['close'][idx]
+        volume = body['chart']['result'][0]['indicators']['quote'][0]['volume'][idx]
         adjclose = body['chart']['result'][0]['indicators']['adjclose'][0]['adjclose'][idx]
 
         obj = {'symbol': symbol, 'date': date, 'open': open, 'high': high, 'low': low, 'close': close,
@@ -69,6 +79,3 @@ session = Session()
 session.add_all(insertArr)
 session.commit()
 
-# query = stock_price_historical_data_table.insert(insertArr)
-# conn = engine.connect()
-# conn.execute(query)
