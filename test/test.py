@@ -7,9 +7,7 @@ import os
 load_dotenv()
 dburl = os.environ.get('dburl')
 
-engine = create_engine(
-    f'mysql+pymysql://{dburl}')
-
+engine = create_engine(f'mysql+pymysql://{dburl}')
 Session = sessionmaker()
 Session.configure(bind=engine)
 

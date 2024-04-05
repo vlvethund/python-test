@@ -1,7 +1,6 @@
 import requests
 import json
 from datetime import datetime
-import time
 from sqlalchemy import create_engine, MetaData, Table, Column, Date, Double, Text, DECIMAL
 from sqlalchemy.orm import sessionmaker
 from store.stockpricehistoricaldata import stock_price_historical_data
@@ -43,8 +42,8 @@ if end != 'today':
     endSplit = end.split('-')
     endDateTime = datetime(int(endSplit[0]), int(endSplit[1]), int(endSplit[2]), 0, 0, 0, tzinfo=tz)
 
-startUnix = int(time.mktime(startDateTime.timetuple()))
-endUnix = int(time.mktime(endDateTime.timetuple()))
+startUnix = int(startDateTime.timestamp())
+endUnix = int(endDateTime.timestamp())
 
 url = f'https://query2.finance.yahoo.com/v8/finance/chart/{symbol}?formatted=true&crumb=BAeTUdnAlvz&lang=en-US&region=US&includeAdjustedClose=true&interval=1d&period1={startUnix}&period2={endUnix}&events=capitalGain%7Cdiv%7Csplit&useYfid=true&corsDomain=finance.yahoo.com'
 
@@ -69,13 +68,13 @@ if response.status_code == 200:
         insertArr.append(stock_price_historical_data(symbol=symbol, date= date, open=open, high=high, low=low, close=close, adj_close=adjclose))
 
 
-engine = create_engine(
-    f'mysql+pymysql://{dburl}')
+engine = create_engine(f'mysql+pymysql://{dburl}')
+
 
 Session = sessionmaker()
 Session.configure(bind=engine)
 
 session = Session()
-session.add_all(insertArr)
-session.commit()
+# session.add_all(insertArr)
+# session.commit()
 
