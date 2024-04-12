@@ -36,7 +36,7 @@ session = Session()
 
 # time settings
 
-tz = timezone('EST')
+tz = timezone('America/New_York')
 startSplit = start.split('-')
 
 startDateTime = datetime(int(startSplit[0]), int(startSplit[1]), int(startSplit[2]), 0, 0, 0, tzinfo=tz)

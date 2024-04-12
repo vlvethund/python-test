@@ -11,7 +11,7 @@ from pytz import timezone
 
 load_dotenv()
 dburl = os.environ.get('dburl')
-tz = timezone('EST')
+tz = timezone('America/New_York')
 
 symbol = 'AAPL'
 start = '2000-01-01'
@@ -65,7 +65,7 @@ if response.status_code == 200:
         obj = {'symbol': symbol, 'date': date, 'open': open, 'high': high, 'low': low, 'close': close,
                'adjclose': adjclose}
 
-        insertArr.append(stock_price_historical_data(symbol=symbol, date= date, open=open, high=high, low=low, close=close, adj_close=adjclose))
+        insertArr.append(stock_price_historical_data(symbol=symbol, date=date, open=open, high=high, low=low, close=close, adj_close=adjclose))
 
 
 engine = create_engine(f'mysql+pymysql://{dburl}')
