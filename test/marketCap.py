@@ -1,3 +1,7 @@
+
+import sys
+sys.path.append('.')
+
 import json
 
 import requests
@@ -8,6 +12,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from store.marketcaphistocialdata import MarketCapHistoricalData
+
 
 tz = timezone('America/New_York')
 load_dotenv()
