@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Text, Date, Double, DECIMAL
+from sqlalchemy import Column, Text, Date, DECIMAL, Float
 
 Base = declarative_base()
 
@@ -9,9 +9,9 @@ class stock_price_historical_data(Base):
 
     symbol = Column(Text, primary_key=True)
     date = Column(Date, primary_key=True)
-    open = Column(Double)
-    high = Column(Double)
-    low = Column(Double)
-    close = Column(Double)
-    adj_close = Column(Double)
+    open = Column(Float)
+    high = Column(Float)
+    low = Column(Float)
+    close = Column(Float)
+    adj_close = Column(Float)
     volume = Column(DECIMAL)
