@@ -9,84 +9,88 @@ from sqlalchemy.orm import sessionmaker
 
 from feature import get_data, save_data
 
-
 # inputs
-# symbol = 'AAPL'
+symbol = 'AAPL'
 # symbol = 'MSFT'
 # symbol = 'GOOG'
 # symbol = 'XOM'
 # symbol = 'WMT'
 # symbol = 'GE'
 # symbol = 'CSCO'
-symbol = 'IXIC'
-start = '1980-01-01'
+# symbol = 'IXIC'
+start = '2024-04-12'
 end = 'today'
 
-# db settings
-load_dotenv()
-dburl = os.environ.get('dburl')
 
-engine = create_engine(
-    f'mysql+pymysql://{dburl}')
+def get_historical_data(symbol, start, end):
+    # db settings
+    load_dotenv()
+    dburl = os.environ.get('dburl')
 
-Session = sessionmaker()
-Session.configure(bind=engine)
+    engine = create_engine(
+        f'mysql+pymysql://{dburl}')
 
-session = Session()
+    Session = sessionmaker()
+    Session.configure(bind=engine)
 
-# time settings
+    session = Session()
 
-tz = timezone('America/New_York')
-startSplit = start.split('-')
+    # time settings
 
-startDateTime = datetime(int(startSplit[0]), int(startSplit[1]), int(startSplit[2]), 0, 0, 0, tzinfo=tz)
-endDateTime = datetime.today().astimezone(tz)
+    tz = timezone('America/New_York')
+    startSplit = start.split('-')
 
-if end != 'today':
-    endSplit = end.split('-')
-    endDateTime = datetime(int(endSplit[0]), int(endSplit[1]), int(endSplit[2]), 0, 0, 0, tzinfo=tz)
+    startDateTime = datetime(int(startSplit[0]), int(startSplit[1]), int(startSplit[2]), 0, 0, 0, tzinfo=tz)
+    endDateTime = datetime.today().astimezone(tz)
 
-sectionStartDateTime = startDateTime
-sectionEndDateTime = startDateTime + timedelta(days=365)
+    if end != 'today':
+        endSplit = end.split('-')
+        endDateTime = datetime(int(endSplit[0]), int(endSplit[1]), int(endSplit[2]), 0, 0, 0, tzinfo=tz)
 
-while True:
-    if sectionEndDateTime < endDateTime:
-        response = get_data(symbol, sectionStartDateTime, sectionEndDateTime)
+    sectionStartDateTime = startDateTime
+    sectionEndDateTime = startDateTime + timedelta(days=365)
 
-        if response.status_code != 200:
-            print('Request Error', response.reason)
+    while True:
+        if sectionEndDateTime < endDateTime:
+            response = get_data(symbol, sectionStartDateTime, sectionEndDateTime)
+
+            if response.status_code != 200:
+                print('Request Error', response.reason)
+
+                sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
+                sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
+                continue
+
+            content = response.content.decode('utf-8')
+            data = json.loads(content)
+
+            if data['chart']['result'] is None:
+                print(content['chart']['error']['description'])
+                sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
+                sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
+                continue
+
+            print(f'Saving {sectionStartDateTime.date()} - {sectionEndDateTime.date()}...')
+            save_data(data, session)
 
             sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
             sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
-            continue
+        else:
+            response = get_data(symbol, sectionStartDateTime, sectionEndDateTime)
 
-        content = response.content.decode('utf-8')
-        data = json.loads(content)
+            if response.status_code != 200:
+                print('Request Error', response.reason)
+                continue
+            content = response.content.decode('utf-8')
+            data = json.loads(content)
 
-        if data['chart']['result'] is None:
-            print(content['chart']['error']['description'])
-            sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
-            sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
-            continue
+            if data['chart']['result'] is None:
+                print(content['chart']['error']['description'])
+                continue
 
-        save_data(data, session)
-
-        sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
-        sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
-    else:
-        response = get_data(symbol, sectionStartDateTime, sectionEndDateTime)
-
-        if response.status_code != 200:
-            print('Request Error', response.reason)
-            continue
-        content = response.content.decode('utf-8')
-        data = json.loads(content)
-
-        if data['chart']['result'] is None:
-            print(content['chart']['error']['description'])
-            continue
-
-        save_data(data, session)
-        break
+            print(f'Saving {sectionStartDateTime.date()} - {sectionEndDateTime.date()}...')
+            save_data(data, session)
+            break
 
 
+# get_historical_data(symbol, start, end)

@@ -9,9 +9,10 @@ from datetime import datetime
 from pytz import timezone
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, cast, DATE
 from sqlalchemy.orm import sessionmaker
 from store.marketcaphistocialdata import MarketCapHistoricalData
+from module.getHistoricalData import get_historical_data
 
 
 tz = timezone('America/New_York')
@@ -94,6 +95,14 @@ if res2.status_code == 200:
         print('marketCap: ', marketCap)
         print('-------------------------------------------------------')
 
-        session.add(MarketCapHistoricalData(symbol=symbol, date=marketTime, market_cap=marketCap))
+        exists = (session.query(MarketCapHistoricalData)
+                  .filter(MarketCapHistoricalData.symbol == symbol)
+                  .filter(cast(MarketCapHistoricalData.date, DATE) == marketTime.date())
+                  .all())
+
+        if len(exists) <= 0:
+            session.add(MarketCapHistoricalData(symbol=symbol, date=marketTime, market_cap=marketCap))
+            get_historical_data(symbol, marketTime.strftime('%Y-%m-%d'), marketTime.strftime('%Y-%m-%d'))
+
 
     session.commit()
