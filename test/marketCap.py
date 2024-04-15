@@ -1,5 +1,5 @@
-
 import sys
+
 sys.path.append('.')
 
 import json
@@ -14,40 +14,9 @@ from sqlalchemy.orm import sessionmaker
 from store.marketcaphistocialdata import MarketCapHistoricalData
 from module.getHistoricalData import get_historical_data
 
-
 tz = timezone('America/New_York')
 load_dotenv()
 dburl = os.environ.get('dburl')
-
-header = {
-    'Accept': 'application/json, text/javascript, */*; q=0.01',
-    'Accept-Encoding': 'gzip, deflate, zstd, utf-8',
-    'Accept-Language': 'ko,en-US;q=0.9,en;q=0.8,ko-KR;q=0.7',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'X-Requested-With': 'XMLHttpRequest'
-}
-
-data = {
-    'country[]': '5',
-    'sector': '36,25,27,28,24,29,35,30,26,34,33,31,32',
-    'industry': '182,190,204,199,212,177,172,207,214,217,179,184,203,181,185,197,222,215,220,202,200,187,229,209,210,192,195,193,228,206,218,205,208,194,183,196,178,230,225,223,216,173,174,180,188,201,211,232,186,226,175,227,231,213,219,198,221,191,189,176,224',
-    'equityType': 'ORD,DRC,Preferred,Unit,ClosedEnd,REIT,ELKS,OpenEnd,Right,ParticipationShare,CapitalSecurity,PerpetualCapitalSecurity,GuaranteeCertificate,IGC,Warrant,SeniorNote,Debenture,ETF,ADR,ETC',
-    'exchange[]': '2',
-    'eq_market_cap[min]': '1',
-    'eq_market_cap[max]': '999999999999999',
-    'pn': '1',
-    'order[col]': 'eq_market_cap',
-    'order[dir]': 'd'
-}
-
-res = requests.post('https://www.investing.com/stock-screener/Service/SearchStocks', headers=header, data=data)
-
-if res.status_code == 200:
-    content = res.content.decode('utf-8')
-    body = json.loads(content)
-    sortedList = sorted(body.get('hits'), key=lambda student: student.get('eq_market_cap'), reverse=True)
-    eq_mkt_cap = sortedList[0].get('eq_market_cap')
-    mktcap = sortedList[0].get('mktcap')
 
 params2 = {
     'crumb': 'WFUUfvdDToA',
@@ -103,6 +72,5 @@ if res2.status_code == 200:
         if len(exists) <= 0:
             session.add(MarketCapHistoricalData(symbol=symbol, date=marketTime, market_cap=marketCap))
             get_historical_data(symbol, marketTime.strftime('%Y-%m-%d'), marketTime.strftime('%Y-%m-%d'))
-
 
     session.commit()

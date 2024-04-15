@@ -9,18 +9,6 @@ from sqlalchemy.orm import sessionmaker
 
 from feature import get_data, save_data
 
-# inputs
-symbol = 'AAPL'
-# symbol = 'MSFT'
-# symbol = 'GOOG'
-# symbol = 'XOM'
-# symbol = 'WMT'
-# symbol = 'GE'
-# symbol = 'CSCO'
-# symbol = 'IXIC'
-start = '2024-04-12'
-end = 'today'
-
 
 def get_historical_data(symbol, start, end):
     # db settings
@@ -58,7 +46,7 @@ def get_historical_data(symbol, start, end):
                 print('Request Error', response.reason)
 
                 sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
-                sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
+                sectionEndDateTime = sectionEndDateTime + timedelta(days=365)
                 continue
 
             content = response.content.decode('utf-8')
@@ -67,14 +55,14 @@ def get_historical_data(symbol, start, end):
             if data['chart']['result'] is None:
                 print(content['chart']['error']['description'])
                 sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
-                sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
+                sectionEndDateTime = sectionEndDateTime + timedelta(days=365)
                 continue
 
             print(f'Saving {sectionStartDateTime.date()} - {sectionEndDateTime.date()}...')
             save_data(data, session)
 
             sectionStartDateTime = sectionEndDateTime + timedelta(days=1)
-            sectionEndDateTime = sectionEndDateTime + timedelta(days=366)
+            sectionEndDateTime = sectionEndDateTime + timedelta(days=365)
         else:
             response = get_data(symbol, sectionStartDateTime, sectionEndDateTime)
 
@@ -93,4 +81,18 @@ def get_historical_data(symbol, start, end):
             break
 
 
-# get_historical_data(symbol, start, end)
+if __name__ == "__main__":
+
+    # inputs
+    # symbol = 'AAPL'
+    # symbol = 'MSFT'
+    # symbol = 'GOOG'
+    # symbol = 'XOM'
+    # symbol = 'WMT'
+    # symbol = 'GE'
+    # symbol = 'CSCO'
+    symbol = '^IXIC'
+    start = '2020-01-01'
+    end = 'today'
+
+    get_historical_data(symbol, start, end)

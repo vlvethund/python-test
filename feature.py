@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import DATE, cast
 from store.stockpricehistoricaldata import stock_price_historical_data
 
-tz = timezone('EST')
+tz = timezone('America/New_York')
 
 
 def get_data(symb, start, end):
