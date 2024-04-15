@@ -10,8 +10,8 @@ load_dotenv()
 dburl = os.environ.get('dburl')
 
 symbol = 'AAPL'
-start = '04/01/2024'
-end = '04/12/2024'
+start = '04/01/2023'
+end = '04/12/2023'
 
 headers = {
     "Accept": "application/json, text/plain, */*",
