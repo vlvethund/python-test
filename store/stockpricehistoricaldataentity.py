@@ -4,7 +4,7 @@ from sqlalchemy import Column, Text, Date, DECIMAL, Float
 Base = declarative_base()
 
 
-class stock_price_historical_data(Base):
+class StockPriceHistoricalData(Base):
     __tablename__ = 'stock_price_historical_data'
 
     symbol = Column(Text, primary_key=True)

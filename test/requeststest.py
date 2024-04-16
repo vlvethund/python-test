@@ -1,9 +1,9 @@
 import requests
 import json
 from datetime import datetime
-from sqlalchemy import create_engine, MetaData, Table, Column, Date, Double, Text, DECIMAL
+from sqlalchemy import create_engine, MetaData, Table, Column, Date, Float, Text, DECIMAL
 from sqlalchemy.orm import sessionmaker
-from store.stockpricehistoricaldata import stock_price_historical_data
+from store.stockpricehistoricaldataentity import StockPriceHistoricalData
 from dotenv import load_dotenv
 import os
 from pytz import timezone
@@ -22,11 +22,11 @@ stock_price_historical_data_table = Table(
     'stock_price_historical_data', MetaData(),
     Column('symbol', Text, primary_key=True),
     Column('date', Date, primary_key=True),
-    Column('open', Double),
-    Column('high', Double),
-    Column('low', Double),
-    Column('close', Double),
-    Column('adj_close', Double),
+    Column('open', Float),
+    Column('high', Float),
+    Column('low', Float),
+    Column('close', Float),
+    Column('adj_close', Float),
     Column('volume', DECIMAL),
 )
 
@@ -65,7 +65,7 @@ if response.status_code == 200:
         obj = {'symbol': symbol, 'date': date, 'open': open, 'high': high, 'low': low, 'close': close,
                'adjclose': adjclose}
 
-        insertArr.append(stock_price_historical_data(symbol=symbol, date=date, open=open, high=high, low=low, close=close, adj_close=adjclose))
+        insertArr.append(StockPriceHistoricalData(symbol=symbol, date=date, open=open, high=high, low=low, close=close, adj_close=adjclose))
 
 
 engine = create_engine(f'mysql+pymysql://{dburl}')

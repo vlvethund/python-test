@@ -32,7 +32,7 @@ def get_year_range(start_date, end_date):
 
 
 def get_date_from_unix(unix_time):
-    datetime.fromtimestamp(unix_time, get_edt_timezone())
+    return datetime.fromtimestamp(unix_time, get_edt_timezone())
 
 
 if __name__ == '__main__':

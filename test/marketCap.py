@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine, cast, DATE
 from sqlalchemy.orm import sessionmaker
-from store.marketcaphistocialdata import MarketCapHistoricalData
+from store.marketcaphistocialdataentity import MarketCapHistoricalData
 from module.getHistoricalData import get_historical_data
 
 tz = timezone('America/New_York')

@@ -14,7 +14,7 @@ def get_stock_historical_data(symb, start, end):
     return requests.get(url, headers={'user-agent': 'sdfsdf', 'Accept': 'application/json, text/plain, */*'})
 
 
-def get_top_current_market_cap(max_size=25):
+def get_current_top_market_cap(max_size=25):
     params = {
         'crumb': 'WFUUfvdDToA',
         'formatted': 'true'

@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from store.stockpricehistoricaldata import stock_price_historical_data
+from store.stockpricehistoricaldataentity import StockPriceHistoricalData
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
@@ -13,7 +13,7 @@ Session.configure(bind=engine)
 
 session = Session()
 
-query = session.query(stock_price_historical_data)
+query = session.query(StockPriceHistoricalData)
 result = query.all()
 
 print(result)

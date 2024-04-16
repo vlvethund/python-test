@@ -2,7 +2,7 @@ import requests
 from pytz import timezone
 from datetime import datetime
 from sqlalchemy import DATE, cast
-from store.stockpricehistoricaldata import stock_price_historical_data
+from store.stockpricehistoricaldataentity import StockPriceHistoricalData
 
 tz = timezone('America/New_York')
 
@@ -29,13 +29,13 @@ def save_data(content, sqlalchemy_session):
         volume = content['chart']['result'][0]['indicators']['quote'][0]['volume'][idx]
         adjclose = content['chart']['result'][0]['indicators']['adjclose'][0]['adjclose'][idx]
 
-        exists = (sqlalchemy_session.query(stock_price_historical_data)
-                  .filter(stock_price_historical_data.symbol == symbol)
-                  .filter(cast(stock_price_historical_data.date, DATE) == date.date()).all())
+        exists = (sqlalchemy_session.query(StockPriceHistoricalData)
+                  .filter(StockPriceHistoricalData.symbol == symbol)
+                  .filter(cast(StockPriceHistoricalData.date, DATE) == date.date()).all())
 
         if len(exists) <= 0:
-            insert_arr.append(stock_price_historical_data(symbol=symbol, date=date, open=open, high=high, low=low,
-                                                          close=close, adj_close=adjclose, volume=volume))
+            insert_arr.append(StockPriceHistoricalData(symbol=symbol, date=date, open=open, high=high, low=low,
+                                                       close=close, adj_close=adjclose, volume=volume))
 
     sqlalchemy_session.add_all(insert_arr)
     sqlalchemy_session.commit()
