@@ -9,6 +9,9 @@ YEAR = 365
 def get_edt_timezone():
     return timezone('America/New_York')
 
+def get_gmt_timezone():
+    return timezone('GMT')
+
 
 def get_year_range(start_date, end_date):
     arr = []
@@ -33,6 +36,9 @@ def get_year_range(start_date, end_date):
 
 def get_date_from_unix(unix_time):
     return datetime.fromtimestamp(unix_time, get_edt_timezone())
+
+def get_gmt_date_from_unix(unix_time):
+    return datetime.fromtimestamp(unix_time, get_gmt_timezone())
 
 
 if __name__ == '__main__':

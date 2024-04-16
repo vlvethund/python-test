@@ -2,7 +2,7 @@ from sqlalchemy import tuple_
 import copy
 
 from module.database import connectdb
-from module.timeutil import get_date_from_unix
+from module.timeutil import get_gmt_date_from_unix, get_date_from_unix
 from module import logger
 from store.marketcaphistocialdataentity import MarketCapHistoricalData
 
@@ -30,8 +30,8 @@ def save_market_cap_historical_data_from_ychart(content):
     symbol = content.get('chart_data')[0][0].get('object_id')
 
     for item in content.get('chart_data')[0][0].get('raw_data'):
-        date = get_date_from_unix(item[0] / 1000.0)
-        market_cap = get_date_from_unix(item[1])
+        date = get_gmt_date_from_unix(item[0] / 1000.0)
+        market_cap = int(item[1] * 1000000)
         market_cap_historical_data_list.append(MarketCapHistoricalData(symbol=symbol, date=date, market_cap=market_cap))
 
     save_market_cap_historical_data(market_cap_historical_data_list)
@@ -45,7 +45,7 @@ def save_market_cap_historical_data(market_cap_list, session=connectdb()):
         pk_arr.append((entity.symbol, entity.date.date()))
 
     query_result = session.query(MarketCapHistoricalData) \
-        .filter(tuple_(MarketCapHistoricalData.symbol, MarketCapHistoricalData.date).in_(pk_arr))
+        .filter(tuple_(MarketCapHistoricalData.symbol, MarketCapHistoricalData.date).in_(pk_arr)).all()
 
     for cap_data in query_result:
         query_dict[f'{cap_data.symbol}||{cap_data.date}'] = cap_data

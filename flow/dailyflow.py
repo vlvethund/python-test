@@ -2,7 +2,7 @@ from module import marketcaphistoricaldata, stockpricehistoricaldata, yahoofinan
 
 
 def collect_daily_data():
-    logger.info('Daily task START')
+    logger.info('[[[ DAILY TASK START ]]]')
     logger.info('Get Current Top Market Cap Data from Yahoo Finance..')
     top_market_cap_res = yahoofinance.get_current_top_market_cap(10)
 
@@ -37,7 +37,7 @@ def collect_daily_data():
         logger.info('-----------------------------------------------------------')
 
     collect_nasdaq_composite(market_cap_entities[0].date)
-    logger.info('Daily task END')
+    logger.info('[[[ DAILY TASK END ]]]')
 
 
 def collect_nasdaq_composite(date):

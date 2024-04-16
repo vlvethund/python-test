@@ -30,7 +30,6 @@ def save_stock_historical_data_from_yahoofinance(content):
 
 
 def save_stock_historical_data_list(stock_historical_data_list, session=connectdb()):
-    insert_arr = []
     pk_arr = []
     query_dict = {}
 
