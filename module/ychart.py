@@ -5,7 +5,7 @@ def get_market_cap_historical_data(symbol, start, end):
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Cookie": "ycsessionid=q4i61h698nbaetqk14klk0f0cbw9somb;",
+        "Cookie": "ycsessionid=sc7642h9dytwlulei71g40469dxfthoh;",
         'User-Agent': 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)',
         'X-Requested-With': 'XMLHttpRequest'
     }
