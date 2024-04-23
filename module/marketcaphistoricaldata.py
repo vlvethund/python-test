@@ -31,7 +31,9 @@ def save_market_cap_historical_data_from_ychart(content):
 
     for item in content.get('chart_data')[0][0].get('raw_data'):
         date = get_gmt_date_from_unix(item[0] / 1000.0)
-        market_cap = int(item[1] * 1000000)
+        market_cap = None
+        if item[1] is float:
+            market_cap = int(item[1] * 1000000)
         market_cap_historical_data_list.append(MarketCapHistoricalData(symbol=symbol, date=date, market_cap=market_cap))
 
     save_market_cap_historical_data(market_cap_historical_data_list)
